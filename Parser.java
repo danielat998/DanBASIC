@@ -10,7 +10,7 @@ public class Parser{
 	//only use this for testing
 	public static void main(String[] args){
 		String[] lines = {"0 PRINT 10 20 hello goodbye", "10 goto 0", "11 IF a = 4 THEN", "12 GOTO 10",
-					 																																						"13 END"};
+					 																																						"13 ENDIF"};
 		Prog prog = parse(lines);
 		System.out.println(prog.instructions[0] + "\n" + prog.instructions[10] + "\n" + 
 							         prog.instructions[11] +"\n\t" + prog.instructions[11].matchingIfOrEnd + "\n"
@@ -19,7 +19,7 @@ public class Parser{
 	}
 
 	public static enum Command {
-		PRINT,INPUT,GOTO,IF,THEN,LET,END//...
+		PRINT,INPUT,GOTO,IF,THEN,LET,ENDIF//...
 	}
 
 	public static class Inst{
@@ -58,10 +58,6 @@ public class Parser{
 			Inst inst = new Inst();
 			inst.lineNo = Integer.parseInt(tokens[0]);
 			prog.instructions[inst.lineNo] = inst;
-			/*if (ifLevel != 0){//must wait for endif...
-				//inst.command 
-				continue;
-			}*/
 			switch(tokens[1]){//actual command
 				case "PRINT":case "print":
 						inst.command = Command.PRINT;
@@ -79,9 +75,9 @@ public class Parser{
 						ifs.push(inst);
 						//gonna be complicated, not sure whether this belongs in the parse or interpreter
 						break;
-				case "END":case "end":case "ENDIF":case "endif":
+				case "ENDIF":case "endif":
 						//pop from if stack to get most recent if to match up
-						inst.command = Command.END;
+						inst.command = Command.ENDIF;
 						Inst matchingIf = ifs.pop();
 						matchingIf.matchingIfOrEnd = inst;
 						inst.matchingIfOrEnd = matchingIf;
@@ -98,9 +94,10 @@ public class Parser{
 						inst.params[1] = tokens[4];//ignore '='
 						//finish this, again think at least part of this belongs in interpreter...
 						//TODO:GOSUB,RETURN,CLEAR,LIST,RUN,END
+
 						break;
 				default:
-						System.out.println("Unrecognised command, please try again");			
+						System.out.println("Unrecognised command:"+ tokens[1] + ", please try again");			
 			}
 		}
 		return prog;
