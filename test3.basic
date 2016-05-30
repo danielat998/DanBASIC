@@ -1,0 +1,8 @@
+10 PRINT PLEASE ENTER A NUMBER
+20 INPUT $A
+30 LET B = 1-2
+35 print 1 - 1 is $B
+36 please enter a number
+37 input $C
+38 LET D = $C + 1
+40 print your input plus one is $D

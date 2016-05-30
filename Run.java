@@ -22,7 +22,7 @@ public class Run{
 		Scanner input = new Scanner(System.in);
 		for (int pc = 0; pc < prog.instructions.length;pc++){
 			Parser.Inst i = prog.instructions[pc];
-			if (i == null)//we want to skip non-existant line numbers
+			if (i == null)//we want to skip non-existent line numbers
 				continue;
 			if (i.command == Parser.Command.PRINT){
 				for (String s : i.params){
@@ -49,11 +49,57 @@ public class Run{
 				}
 			}	else if (i.command == Parser.Command.ENDIF){
 					continue;
+			} else if (i.command == Parser.Command.LET){
+	System.out.println("params[0]:" + i.params[0]);// + "params[1]" + i.params[1]);
+	System.out.println("evaluated as: " + evaluate(prog, i.params[1]));
+					prog.vars.put(i.params[0], evaluate(prog, i.params[1]));
+					continue;
 			} else {
 				System.out.println("  command "+i.command +" not recognised");
 			}
 		}//pc loop
 	}//run
+
+	public static String evaluate(Parser.Prog prog, String str){
+		// **TODO: handle variables **
+		//evaluate an arithmetic (?) expression
+		//for now, we will only allow a string or an arithmetic expr, but in future, we could allow
+		//string concatenation etc...
+		String left = "";
+		String right = "";
+		char op = ' ';
+		boolean isLeft = true;//false means rhs of operator
+		for (char c : str.toCharArray()){
+			if (isLeft){
+				if (("" + c).matches("-/*")){//running into regex issues when including '+'... :P
+					op = c;
+					isLeft = false;
+				}
+				else
+					left += c;
+			} else {//so rhs
+					//for now keep things simple and only allow one (infix) operator
+					right += c;
+			}
+		}
+System.out.println("left:" + left + "right:"	+ right);
+		try {
+			int leftInt = Integer.parseInt(left);
+			int rightInt = Integer.parseInt(right);
+	System.out.println("op:" + op);
+			switch (op){
+				case '+': return "" + (leftInt + rightInt);
+				case '-': return "" + (leftInt - rightInt);
+				case '*': return "" + (leftInt * rightInt);
+				case '/': return "" + (leftInt / rightInt);
+			}
+		} catch (Exception e){
+			System.err.println("An error occured. This is most likely due to attempting to perform an" +
+											  " arithmetic operation on a String");
+			e.printStackTrace();
+		}
+		return left;
+	}
 
 	public static boolean statementTrue(Parser.Prog prog, String x, String comp, String y){
 		//first of all, check if x and/or y are variables, if so, retrieve their values and replace
@@ -86,6 +132,8 @@ public class Run{
 					return xInt == yInt;
 			if (comp.equals(">"))
 					return xInt > yInt;
+			if (comp.equals("<>"))
+					return xInt != yInt;
 		} catch (Exception e){
 			//use default java string comparison for now
 			if (comp.equals("<"))
@@ -94,6 +142,8 @@ public class Run{
 				return x.equals(y);
 			if (comp.equals(">"))
 				return x.compareTo(y) > 0;
+			if (comp.equals("<>"))
+				return !x.equals(y);
 		}
 		return false;
 	}

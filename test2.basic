@@ -1,0 +1,9 @@
+10 PRINT PLEASE ENTER A NUMBER
+20 INPUT X
+30 IF $X = 5
+40 PRINT X IS 5
+50 ENDIF
+60 if $X <> 5
+70 print X is not 5
+80 print X is $X
+90 endif

@@ -5,6 +5,7 @@ import java.util.Stack;
 /*Language simplifications:
 for now, there must be a space between LET X = 5 etc
 no ELSEs
+no spaces in arithmetic expressions
 */
 public class Parser{
 	//only use this for testing
@@ -89,12 +90,14 @@ public class Parser{
 							inst.params[i] = tokens[i+2];
 						break;
 				case "LET":case "let":
+						//for now we will disallow spaces and only have one 'parameter' e.g. LET X=1+2
 						inst.command = Command.LET;
 						inst.params[0] = tokens[2];
+	System.out.println("\n2:" + tokens[2] + "\n3:" + tokens[3] + "\n4:" + tokens[4]);
+						inst.params = new String[2];
 						inst.params[1] = tokens[4];//ignore '='
 						//finish this, again think at least part of this belongs in interpreter...
 						//TODO:GOSUB,RETURN,CLEAR,LIST,RUN,END
-
 						break;
 				default:
 						System.out.println("Unrecognised command:"+ tokens[1] + ", please try again");			
